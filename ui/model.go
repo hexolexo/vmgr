@@ -79,7 +79,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "VM management\n\nMode: "
+	s := "Mode: "
 	switch m.mode {
 	case 0:
 		s += "Toggle\n"
