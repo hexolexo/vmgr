@@ -23,7 +23,7 @@ func StartTUI(manager vm.VMManager, state vm.VMState) (*libvirt.Domain, error) {
 	var err error
 	var domainToSSH *libvirt.Domain
 	p := tea.NewProgram(initialModel(manager, state))
-	finalModel, err := p.Run() //  BUG: PANIC invalid memory address or nil pointer dereference
+	finalModel, err := p.Run()
 
 	if err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
@@ -60,15 +60,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-		case "up", "k":
+		case "up", "e":
 			if m.cursor > 0 {
 				m.cursor--
 			}
-		case "down", "j":
+		case "down", "i":
 			if m.cursor < len(m.state.AllDomains)-1 {
 				m.cursor++
 			}
-		case "left", "right":
+		case "left", "right", "n", "o":
 			m.mode ^= 1 // Flips from 0 and 1  TODO: Should later add more options
 		case "enter", " ":
 			return vmAction(m)
