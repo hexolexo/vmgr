@@ -239,21 +239,23 @@ func initLibvirtd() error {
 
 // initNetwork initializes the default virtual network
 func (vm *VMManager) initNetwork() error {
-	defaultNetwork, err := vm.conn.NetworkLookupByName("default") //  TODO: This has to support other inputs
+	// Get all defined networks
+	networks, _, err := vm.conn.ConnectListAllNetworks(1, 0) // flags=1 for all networks
 	if err != nil {
-		return fmt.Errorf("virtual network unable to start, missing 'default' network: %w", err)
+		return fmt.Errorf("failed to list networks: %w", err)
 	}
 
-	// Try to create (start) the network
-	err = vm.conn.NetworkCreate(defaultNetwork)
-	if err != nil {
-		// Check if the error is because network is already active
-		if strings.Contains(err.Error(), "network is already active") {
-			// Network is already running, this is not an error
-			return nil
+	var errors []string
+	for _, network := range networks {
+		// Try to start each network
+		err = vm.conn.NetworkCreate(network)
+		if err != nil && !strings.Contains(err.Error(), "network is already active") {
+			errors = append(errors, fmt.Sprintf("failed to start network '%s': %v", network.Name, err))
 		}
-		// Some other error occurred
-		return fmt.Errorf("failed to start network: %w", err)
+	}
+
+	if len(errors) > 0 {
+		return fmt.Errorf("network initialization errors: %s", strings.Join(errors, "; "))
 	}
 
 	return nil

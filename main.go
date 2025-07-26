@@ -19,12 +19,12 @@ func main() {
 
 	shouldExit := false
 	var domainToSSH *libvirt.Domain
-	domainToSSH = nil // I feel like this might be bad practice
+	domainToSSH = nil // Totally secure programming practices /j
 	for {
 		state, err := vmMgr.GetVMState()
 		if err != nil {
-			vmMgr.Close() //  HACK: Might want to find a more elegant solution
-			log.Fatal("Failed to get VM state:", err)
+			vmMgr.Close()                             //  HACK: Might want to find a more elegant solution
+			log.Fatal("Failed to get VM state:", err) //  HACK: The nesting might also be an issue
 		}
 		if len(state.ActiveDomains) == 1 && domainToSSH == nil {
 			shouldExit = sshToVM(*vmMgr, state.ActiveDomains[0])
@@ -40,7 +40,7 @@ func main() {
 			return
 		}
 		if domainToSSH == nil { // Leave me and my ratsnest of if statements alone
-			return // it's returning here
+			return
 		}
 	}
 }
@@ -58,5 +58,5 @@ func sshToVM(vmMgr vm.VMManager, domain libvirt.Domain) bool {
 	if time.Since(sshConnectionStarted) > 5*time.Second {
 		return true
 	}
-	return false
+	return false //  HACK: Magic varible
 }
