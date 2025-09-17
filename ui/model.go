@@ -13,7 +13,7 @@ import (
 type model struct {
 	cursor      int
 	domainToSSH *libvirt.Domain
-	manager     vm.VMManager
+	manager     *vm.VMManager
 	state       *vm.VMState
 	mode        int
 	err         error
@@ -38,7 +38,7 @@ func StartTUI(manager vm.VMManager, state vm.VMState) (*libvirt.Domain, error) {
 }
 func initialModel(manager vm.VMManager, state vm.VMState) model {
 	return model{
-		manager:     manager,
+		manager:     &manager,
 		state:       &state,
 		domainToSSH: nil,
 		err:         nil,
