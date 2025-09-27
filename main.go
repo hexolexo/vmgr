@@ -61,10 +61,18 @@ func sshToVM(vmMgr *vm.VMManager, domain libvirt.Domain) bool {
 	sshConnectionStarted := time.Now()
 
 	fmt.Printf("Connecting to VM: %s via SSH\n", domain.Name)
+	maxAttempts := 3
+	attempt := 0
 
-	err := vmMgr.ExecuteAction(domain, vm.SSH) // Should put something here for repetition if it fails
+retry:
+	attempt++
+	err := vmMgr.ExecuteAction(domain, vm.SSH)
 	if err != nil {
 		log.Printf("Failed to SSH into VM %s: %v", domain.Name, err)
+		if attempt < maxAttempts {
+			time.Sleep(time.Second * 2)
+			goto retry
+		}
 		return false
 	}
 
